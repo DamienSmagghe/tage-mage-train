@@ -3,7 +3,8 @@ let answerInput = document.querySelector('#answerInput')
 let answer = this.document.querySelector('.answer')
 let wrong = this.document.querySelector('.wrong')
 let good = this.document.querySelector('.good')
-
+let primeList = this.document.querySelector('.primeNumberList')
+let errorCounter = this.document.querySelector('.errorsCount')
 let selectedTraining = selectInput.value
 let currentQuestionInstance
 
@@ -14,6 +15,8 @@ function updateQuestion(_e) {
 
 const generateQuestion = (_selectedTraining) => {
     answerInput.value = ''
+    primeList.innerHTML = ''
+    errorCounter.innerHTML = ''
     switch(_selectedTraining) {
         case 'multiplication':
             currentQuestionInstance = new Multiplication()
@@ -24,6 +27,14 @@ const generateQuestion = (_selectedTraining) => {
         case 'cube':
             currentQuestionInstance = new Cube()
             break;
+        case 'primeNumber':
+            if(currentQuestionInstance !== 'primeNumber' || currentQuestionInstance.isAllTold()) {
+                currentQuestionInstance = new PrimeNumber()
+            }
+            break;
+        default:
+            document.querySelector('.questions').innerHTML = 'Les questions apparaissent ici'
+            break;
     }
     
 }
@@ -31,60 +42,73 @@ const generateQuestion = (_selectedTraining) => {
 
 answerInput.addEventListener('keypress', (_e)=> {
     if(_e.keyCode == 13) {
-        answer.innerHTML = currentQuestionInstance.answer
-        if (currentQuestionInstance.response(answerInput.value)) good.style.display = 'inline'
-        else wrong.style.display = 'inline'
+        if (selectedTraining === 'primeNumber') {
+            answer.innerHTML =  ''
+            if (currentQuestionInstance.response(answerInput.value)) {
+                wrong.style.display = 'none'
+                good.style.display = 'inline'
+            }
+            else {
+                good.style.display = 'none'
+                wrong.style.display = 'inline'
+            }
+            setTimeout(()=> {
+                wrong.style.display = 'none'
+                good.style.display = 'none'
+            }, 5000)
+            answerInput.value = null
+            primeList.innerHTML = currentQuestionInstance.toldNumbers
+            if(currentQuestionInstance.isAllTold()) {
+                answer.innerHTML = 'Tous les nombres premiers ont étés dits !'
+            }
 
-        generateQuestion(selectedTraining)
-        setTimeout(()=> {
-            wrong.style.display = 'none'
-            good.style.display = 'none'
-        }, 5000)
+        }
+        else {
+            answer.innerHTML = currentQuestionInstance.answer
+            if (currentQuestionInstance.response(answerInput.value)) good.style.display = 'inline'
+            else wrong.style.display = 'inline'
+
+            generateQuestion(selectedTraining)
+            setTimeout(()=> {
+                wrong.style.display = 'none'
+                good.style.display = 'none'
+            }, 5000)
+        }
     }
 })
-answerInput.addEventListener('focusout', (_e)=> {
-    if(_e.keyCode == 13) {
-        answer.innerHTML = currentQuestionInstance.answer
-        if (currentQuestionInstance.response(answerInput.value)) good.style.display = 'inline'
-        else wrong.style.display = 'inline'
 
-        generateQuestion(selectedTraining)
-        setTimeout(()=> {
-            wrong.style.display = 'none'
-            good.style.display = 'none'
-        }, 5000)
+
+class PrimeNumber {
+    constructor() {
+        this.primeNumbers = [2,3,5,7,11,13,17,19,23,29,31,37,41,43,47,53,59,61,67,71,73,79,83,89,97,101]
+        this.toldNumbers = []
+        this.errors = 0
+        this.question = document.querySelector('.questions').innerHTML = `Tapez les nombres premiers compris entre 1 et 102 ?`
     }
-})
 
+    isPrime(_value) {
+        return this.primeNumbers.includes(_value)
+    }
 
-// class PrimeNumber {
-//     constructor() {
-//         this.primeNumbers = [2,3,5,7,11,13,17,19,23,29,31,37,41,43,47,53,59,61,67,71,73,79,83,89,97,101]
-//         this.toldNumbers = []
-//         this.question = document.querySelector('.questions').innerHTML = `Tapez les nombres premiers compris entre 1 et 102 ?`
-//     }
+    isAllTold() {
+        this.toldNumbers = this.toldNumbers.sort()
+        if (this.toldNumbers === this.primeNumbers) return true
+        return false
+    }
 
-//     isPrime(_value) {
-//         return this.primeNumbers.includes(_value)
-//     }
-
-//     isAllTold() {
-//         this.toldNumbers = this.toldNumbers.sort()
-//         if (this.toldNumbers === this.primeNumbers) return true
-//         return false
-//     }
-
-//     response(_value) {
-//         _value = parseInt(_value)
-//         if (this.isPrime(_value)) {
-//             if(!this.toldNumbers.includes(_value)) this.toldNumbers.push(_value)
-//             return true
-//         }
-//         else {
-//             return false
-//         }
-//     }
-// }
+    response(_value) {
+        _value = parseInt(_value)
+        if (this.isPrime(_value)) {
+            if(!this.toldNumbers.includes(_value)) this.toldNumbers.push(_value)
+            return true
+        }
+        else {
+            errorCounter++
+            errorCounter.innerHTML = `${this.errors} erreur(s)`
+            return false
+        }
+    }
+}
 
 class Multiplication {
     
