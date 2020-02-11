@@ -8,6 +8,7 @@ let errorCounter = this.document.querySelector('.errorsCount')
 let selectedTraining = selectInput.value
 let currentQuestionInstance
 
+
 function updateQuestion(_e) {
     selectedTraining = selectInput.value
     generateQuestion(selectedTraining)
@@ -57,6 +58,11 @@ answerInput.addEventListener('keypress', (_e)=> {
                 good.style.display = 'none'
             }, 5000)
             answerInput.value = null
+            currentQuestionInstance.toldNumbers.sort((a, b)=> {
+                if (a < b) return -1
+                if (a > b) return 1
+                return 0
+            })
             primeList.innerHTML = currentQuestionInstance.toldNumbers
             if(currentQuestionInstance.isAllTold()) {
                 answer.innerHTML = 'Tous les nombres premiers ont étés dits !'
@@ -91,8 +97,12 @@ class PrimeNumber {
     }
 
     isAllTold() {
-        this.toldNumbers = this.toldNumbers.sort()
-        if (this.toldNumbers === this.primeNumbers) return true
+        this.toldNumbers = this.toldNumbers.sort((a, b)=> {
+            if (a < b) return -1
+            if (a > b) return 1
+            return 0
+        })
+        if (this.toldNumbers.join() === this.primeNumbers.join()) return true
         return false
     }
 
@@ -103,7 +113,7 @@ class PrimeNumber {
             return true
         }
         else {
-            errorCounter++
+            this.errors++
             errorCounter.innerHTML = `${this.errors} erreur(s)`
             return false
         }
