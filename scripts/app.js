@@ -30,7 +30,19 @@ const generateQuestion = (_selectedTraining) => {
 
 
 answerInput.addEventListener('keypress', (_e)=> {
-    console.log(_e)
+    if(_e.keyCode == 13) {
+        answer.innerHTML = currentQuestionInstance.answer
+        if (currentQuestionInstance.response(answerInput.value)) good.style.display = 'inline'
+        else wrong.style.display = 'inline'
+
+        generateQuestion(selectedTraining)
+        setTimeout(()=> {
+            wrong.style.display = 'none'
+            good.style.display = 'none'
+        }, 5000)
+    }
+})
+answerInput.addEventListener('focusout', (_e)=> {
     if(_e.keyCode == 13) {
         answer.innerHTML = currentQuestionInstance.answer
         if (currentQuestionInstance.response(answerInput.value)) good.style.display = 'inline'
