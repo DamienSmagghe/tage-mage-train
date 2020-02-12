@@ -46,3 +46,12 @@ h3 {
   color: #e74c3c;  
   display: none;
 }
+.timer {
+    position: absolute;
+    top: 0;
+    right: 0;
+    margin: 20px;
+    font-size: 40px;
+    letter-spacing: 2px;
+    font-weight: bold;
+}
