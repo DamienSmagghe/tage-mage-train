@@ -5,6 +5,10 @@ let wrong = this.document.querySelector('.wrong')
 let good = this.document.querySelector('.good')
 let primeList = this.document.querySelector('.primeNumberList')
 let errorCounter = this.document.querySelector('.errorsCount')
+let answerCounter = this.document.querySelector('.answersCount')
+
+let errors = 0
+let answers = 0
 let selectedTraining = selectInput.value
 let currentQuestionInstance
 
@@ -12,11 +16,11 @@ let chrono = document.querySelector('.timer'),
     seconds = 0, minutes = 0, hours = 0,
     t;
 
+timer();
 
 const generateQuestion = (_selectedTraining) => {
     answerInput.value = ''
     primeList.innerHTML = ''
-    errorCounter.innerHTML = ''
     switch(_selectedTraining) {
         case 'multiplication':
             currentQuestionInstance = new Multiplication()
@@ -102,8 +106,12 @@ function add() {
 function timer() {
     t = setTimeout(add, 1000);
 }
-timer();
+
 function updateQuestion(_e) {
+    errors = 0
+    answers = 0
+    answerCounter.innerHTML = '0 propostions'
+    errorCounter.innerHTML = '0 erreur(s)'
     selectedTraining = selectInput.value
     generateQuestion(selectedTraining)
     chrono.textContent = "00:00:00";
@@ -133,14 +141,14 @@ class PrimeNumber {
     }
 
     response(_value) {
+        updateAnswer()
         _value = parseInt(_value)
         if (this.isPrime(_value)) {
             if(!this.toldNumbers.includes(_value)) this.toldNumbers.push(_value)
             return true
         }
         else {
-            this.errors++
-            errorCounter.innerHTML = `${this.errors} erreur(s)`
+            updateError()
             return false
         }
     }
@@ -156,9 +164,13 @@ class Multiplication {
     }
 
     response(_value) {
+        updateAnswer()
         _value = parseInt(_value)
         if (this.answer === _value) return true
-        else return false
+        else {
+            updateError()
+            return false
+        }
     }
 
 }
@@ -171,9 +183,13 @@ class Square {
     }
 
     response(_value) {
+        updateAnswer()
         _value = parseInt(_value)
         if (this.answer === _value) return true
-        else return false
+        else {
+            updateError()
+            return false
+        }
     }
 
 }
@@ -186,9 +202,21 @@ class Cube {
     }
 
     response(_value) {
+        updateAnswer()
         _value = parseInt(_value)
         if (this.answer === _value) return true
-        else return false
+        else {
+            updateError()
+            return false
+        }
     }
 
+}
+const updateError = () =>{
+        errors++;
+        errorCounter.innerHTML = `${errors} erreur(s)`
+}
+const updateAnswer = ()=> {
+    answers++
+    answerCounter.innerHTML = `${answers} propositions`
 }
